@@ -12,6 +12,8 @@ export default class Jokes extends Component {
     this.state = {
       jokes: [],
     };
+    this.incrementScore = this.incrementScore.bind(this);
+    this.decreaseScore = this.decreaseScore.bind(this);
   }
 
   async componentDidMount() {
@@ -22,14 +24,48 @@ export default class Jokes extends Component {
         url: API_URL,
         headers: { Accept: 'application/json' },
       });
-      const joke = { id: response.data.id, joke: response.data.joke };
+      const joke = { id: response.data.id, joke: response.data.joke, score: 0 };
       jokes.push(joke);
     }
     this.setState({ jokes: jokes });
   }
 
+  incrementScore(id) {
+    const updatedJokes = this.state.jokes.map((joke) => {
+      if (joke.id === id) {
+        joke.score = joke.score + 1;
+      }
+      return joke;
+    });
+    updatedJokes.sort((a, b) =>
+      a.score > b.score ? -1 : a.score < b.score ? 1 : 0
+    );
+    this.setState({ jokes: updatedJokes });
+  }
+
+  decreaseScore(id) {
+    const updatedJokes = this.state.jokes.map((joke) => {
+      if (joke.id === id) {
+        joke.score = joke.score - 1;
+      }
+      return joke;
+    });
+    updatedJokes.sort((a, b) =>
+      a.score > b.score ? -1 : a.score < b.score ? 1 : 0
+    );
+    this.setState({ jokes: updatedJokes });
+  }
+
   render() {
-    const jokes = this.state.jokes.map((j) => <Joke joke={j.joke} />);
+    const jokes = this.state.jokes.map((j) => (
+      <Joke
+        joke={j.joke}
+        score={j.score}
+        id={j.id}
+        upvote={this.incrementScore}
+        downvote={this.decreaseScore}
+      />
+    ));
     return <div className="Jokes">{jokes}</div>;
   }
 }
