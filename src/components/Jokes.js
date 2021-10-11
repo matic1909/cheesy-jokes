@@ -12,6 +12,7 @@ export default class Jokes extends Component {
     super(props);
     this.state = {
       jokes: JSON.parse(window.localStorage.getItem('jokes')) || [],
+      loading: false,
     };
     this.handleVote = this.handleVote.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -24,6 +25,7 @@ export default class Jokes extends Component {
   }
 
   async getJokes() {
+    this.setState({ loading: true });
     let jokes = [];
     while (jokes.length < this.props.numberOfJokes) {
       const response = await axios({
@@ -36,6 +38,7 @@ export default class Jokes extends Component {
     this.setState(
       (state) => ({
         jokes: [...state.jokes, ...jokes],
+        loading: false,
       }),
       () =>
         window.localStorage.setItem('jokes', JSON.stringify(this.state.jokes))
@@ -58,10 +61,18 @@ export default class Jokes extends Component {
   }
 
   handleClick() {
-    this.getJokes();
+    this.setState({ loading: true }, () => this.getJokes());
   }
 
   render() {
+    if (this.state.loading) {
+      return (
+        <div className="Jokes-spinner">
+          <i className="far fa-8x fa-laugh fa-spin"></i>
+          <h1 className="Jokes-title">Loading...</h1>
+        </div>
+      );
+    }
     const jokes = this.state.jokes.map((j) => (
       <Joke
         joke={j.joke}

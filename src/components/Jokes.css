@@ -42,3 +42,8 @@
   align-self: center;
   overflow: scroll;
 }
+
+.Jokes-spinner {
+  color: white;
+  text-align: center;
+}
