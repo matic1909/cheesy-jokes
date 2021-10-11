@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { Component } from 'react';
 import Joke from './Joke';
+import './Jokes.css';
 const API_URL = 'https://icanhazdadjoke.com/';
 
 export default class Jokes extends Component {
@@ -12,8 +13,7 @@ export default class Jokes extends Component {
     this.state = {
       jokes: [],
     };
-    this.incrementScore = this.incrementScore.bind(this);
-    this.decreaseScore = this.decreaseScore.bind(this);
+    this.handleVote = this.handleVote.bind(this);
   }
 
   async componentDidMount() {
@@ -30,23 +30,10 @@ export default class Jokes extends Component {
     this.setState({ jokes: jokes });
   }
 
-  incrementScore(id) {
+  handleVote(id, delta) {
     const updatedJokes = this.state.jokes.map((joke) => {
       if (joke.id === id) {
-        joke.score = joke.score + 1;
-      }
-      return joke;
-    });
-    updatedJokes.sort((a, b) =>
-      a.score > b.score ? -1 : a.score < b.score ? 1 : 0
-    );
-    this.setState({ jokes: updatedJokes });
-  }
-
-  decreaseScore(id) {
-    const updatedJokes = this.state.jokes.map((joke) => {
-      if (joke.id === id) {
-        joke.score = joke.score - 1;
+        joke.score = joke.score + delta;
       }
       return joke;
     });
@@ -62,10 +49,24 @@ export default class Jokes extends Component {
         joke={j.joke}
         score={j.score}
         id={j.id}
-        upvote={this.incrementScore}
-        downvote={this.decreaseScore}
+        handleVote={this.handleVote}
+        key={j.id}
       />
     ));
-    return <div className="Jokes">{jokes}</div>;
+    return (
+      <div className="Jokes">
+        <div className="Jokes-sidebar">
+          <h1 className="Jokes-title">
+            <span>Dad</span> Jokes
+          </h1>
+          <img
+            src="https://assets.dryicons.com/uploads/icon/svg/8927/0eb14c71-38f2-433a-bfc8-23d9c99b3647.svg"
+            alt="laughing face"
+          />
+          <button className="Jokes-getmore">New Jokes</button>
+        </div>
+        <div className="Jokes-jokelist">{jokes}</div>
+      </div>
+    );
   }
 }
