@@ -1,33 +1,29 @@
 import React, { Component } from 'react';
+import './Joke.css';
 
 export default class Joke extends Component {
   constructor(props) {
     super(props);
-    this.handleUpvote = this.handleUpvote.bind(this);
-    this.handleDownvote = this.handleDownvote.bind(this);
+    this.handleVote = this.handleVote.bind(this);
   }
 
-  handleUpvote() {
-    this.props.upvote(this.props.id);
-  }
-
-  handleDownvote() {
-    this.props.downvote(this.props.id);
+  handleVote(e) {
+    let delta = 1;
+    if (e.target.classList.contains('fa-arrow-down')) {
+      delta = -1;
+    }
+    this.props.handleVote(this.props.id, delta);
   }
 
   render() {
     return (
       <div className="Joke">
-        <div className="Joke-score">
-          <span className="Joke-score-up" onClick={this.handleUpvote}>
-            ↑
-          </span>
-          {this.props.score}
-          <span className="Joke-score-down" onClick={this.handleDownvote}>
-            ↓
-          </span>
+        <div className="Joke-buttons">
+          <i className="fas fa-arrow-up" onClick={this.handleVote}></i>
+          <span>{this.props.score}</span>
+          <i className="fas fa-arrow-down" onClick={this.handleVote}></i>
         </div>
-        <p className="Joke-text">{this.props.joke}</p>
+        <div className="Joke-text">{this.props.joke}</div>
       </div>
     );
   }
