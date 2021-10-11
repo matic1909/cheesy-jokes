@@ -6,7 +6,7 @@ const API_URL = 'https://icanhazdadjoke.com/';
 
 export default class Jokes extends Component {
   static defaultProps = {
-    numberOfJokes: 15,
+    numberOfJokes: 8,
   };
   constructor(props) {
     super(props);
@@ -14,6 +14,7 @@ export default class Jokes extends Component {
       jokes: JSON.parse(window.localStorage.getItem('jokes') || '[]'),
     };
     this.handleVote = this.handleVote.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   componentDidMount() {
@@ -32,8 +33,13 @@ export default class Jokes extends Component {
       const joke = { id: response.data.id, joke: response.data.joke, score: 0 };
       jokes.push(joke);
     }
-    this.setState({ jokes: jokes });
-    window.localStorage.setItem('jokes', JSON.stringify(jokes));
+    this.setState(
+      (state) => ({
+        jokes: [...state.jokes, ...jokes],
+      }),
+      () =>
+        window.localStorage.setItem('jokes', JSON.stringify(this.state.jokes))
+    );
   }
 
   handleVote(id, delta) {
@@ -46,7 +52,16 @@ export default class Jokes extends Component {
     updatedJokes.sort((a, b) =>
       a.score > b.score ? -1 : a.score < b.score ? 1 : 0
     );
-    this.setState({ jokes: updatedJokes });
+    this.setState(
+      { jokes: updatedJokes },
+      window.localStorage.setItem('jokes', () =>
+        JSON.stringify(this.state.jokes)
+      )
+    );
+  }
+
+  handleClick() {
+    this.getJokes();
   }
 
   render() {
@@ -69,7 +84,9 @@ export default class Jokes extends Component {
             src="https://assets.dryicons.com/uploads/icon/svg/8927/0eb14c71-38f2-433a-bfc8-23d9c99b3647.svg"
             alt="laughing face"
           />
-          <button className="Jokes-getmore">New Jokes</button>
+          <button className="Jokes-getmore" onClick={this.handleClick}>
+            New Jokes
+          </button>
         </div>
         <div className="Jokes-jokelist">{jokes}</div>
       </div>
