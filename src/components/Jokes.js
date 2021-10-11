@@ -61,7 +61,7 @@ export default class Jokes extends Component {
   }
 
   handleClick() {
-    this.setState({ loading: true }, () => this.getJokes());
+    this.getJokes();
   }
 
   render() {
@@ -69,7 +69,7 @@ export default class Jokes extends Component {
       return (
         <div className="Jokes-spinner">
           <i className="far fa-8x fa-laugh fa-spin"></i>
-          <h1 className="Jokes-title">Loading...</h1>
+          <h1 className="Jokes-title">Asking dad to tell me some jokes...</h1>
         </div>
       );
     }
