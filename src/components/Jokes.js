@@ -11,7 +11,7 @@ export default class Jokes extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      jokes: JSON.parse(window.localStorage.getItem('jokes') || '[]'),
+      jokes: JSON.parse(window.localStorage.getItem('jokes')) || [],
     };
     this.handleVote = this.handleVote.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -52,11 +52,8 @@ export default class Jokes extends Component {
     updatedJokes.sort((a, b) =>
       a.score > b.score ? -1 : a.score < b.score ? 1 : 0
     );
-    this.setState(
-      { jokes: updatedJokes },
-      window.localStorage.setItem('jokes', () =>
-        JSON.stringify(this.state.jokes)
-      )
+    this.setState({ jokes: updatedJokes }, () =>
+      window.localStorage.setItem('jokes', JSON.stringify(this.state.jokes))
     );
   }
 
