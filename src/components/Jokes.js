@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 import React, { Component } from 'react';
 import Joke from './Joke';
 import './Jokes.css';
@@ -14,6 +15,7 @@ export default class Jokes extends Component {
       jokes: JSON.parse(window.localStorage.getItem('jokes')) || [],
       loading: false,
     };
+    this.seenJokes = new Set(this.state.jokes.map((j) => j.joke));
     this.handleVote = this.handleVote.bind(this);
     this.handleClick = this.handleClick.bind(this);
   }
@@ -25,24 +27,35 @@ export default class Jokes extends Component {
   }
 
   async getJokes() {
-    this.setState({ loading: true });
-    let jokes = [];
-    while (jokes.length < this.props.numberOfJokes) {
-      const response = await axios({
-        url: API_URL,
-        headers: { Accept: 'application/json' },
-      });
-      const joke = { id: response.data.id, joke: response.data.joke, score: 0 };
-      jokes.push(joke);
+    try {
+      this.setState({ loading: true });
+      let jokes = [];
+      while (jokes.length < this.props.numberOfJokes) {
+        const response = await axios({
+          url: API_URL,
+          headers: { Accept: 'application/json' },
+        });
+        const newJoke = response.data.joke;
+        if (!this.seenJokes.has(newJoke)) {
+          jokes.push({
+            id: uuidv4(),
+            joke: newJoke,
+            score: 0,
+          });
+        }
+      }
+      this.setState(
+        (state) => ({
+          jokes: [...state.jokes, ...jokes],
+          loading: false,
+        }),
+        () =>
+          window.localStorage.setItem('jokes', JSON.stringify(this.state.jokes))
+      );
+    } catch (e) {
+      console.error(e);
+      this.setState({ loading: false });
     }
-    this.setState(
-      (state) => ({
-        jokes: [...state.jokes, ...jokes],
-        loading: false,
-      }),
-      () =>
-        window.localStorage.setItem('jokes', JSON.stringify(this.state.jokes))
-    );
   }
 
   handleVote(id, delta) {
