@@ -65,9 +65,6 @@ export default class Jokes extends Component {
       }
       return joke;
     });
-    updatedJokes.sort((a, b) =>
-      a.score > b.score ? -1 : a.score < b.score ? 1 : 0
-    );
     this.setState({ jokes: updatedJokes }, () =>
       window.localStorage.setItem('jokes', JSON.stringify(this.state.jokes))
     );
@@ -86,15 +83,17 @@ export default class Jokes extends Component {
         </div>
       );
     }
-    const jokes = this.state.jokes.map((j) => (
-      <Joke
-        joke={j.joke}
-        score={j.score}
-        id={j.id}
-        handleVote={this.handleVote}
-        key={j.id}
-      />
-    ));
+    const jokes = this.state.jokes
+      .sort((a, b) => (a.score > b.score ? -1 : a.score < b.score ? 1 : 0))
+      .map((j) => (
+        <Joke
+          joke={j.joke}
+          score={j.score}
+          id={j.id}
+          handleVote={this.handleVote}
+          key={j.id}
+        />
+      ));
     return (
       <div className="Jokes">
         <div className="Jokes-sidebar">
