@@ -105,7 +105,7 @@ export default class Jokes extends Component {
             alt="laughing face"
           />
           <button className="Jokes-getmore" onClick={this.handleClick}>
-            New Jokes
+            Ask Dad
           </button>
         </div>
         <div className="Jokes-jokelist">{jokes}</div>
